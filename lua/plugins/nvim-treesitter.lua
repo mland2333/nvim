@@ -20,6 +20,7 @@ local ensure_list = {
   'comment',
   'tsx',
   'vue',
+  'verilog',
 }
 
 return {

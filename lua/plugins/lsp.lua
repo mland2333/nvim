@@ -24,13 +24,13 @@ return {
         'sqlls',
         'typst_lsp',
         'bufls',
-        'svls',
         'rust_analyzer',
         'eslint',
         'asm_lsp',
         'tailwindcss',
         'ltex',
-        'svlangserver',
+        'glsl_analyzer',
+        'verible',
       }
       require("mason").setup({
         ui = {
