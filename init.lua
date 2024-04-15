@@ -18,7 +18,6 @@ require("lazy").setup({
     { import = "plugins"},
   },
 })
-  
         --require("plugins")
         --require('plugins.nvim-tree'),
         --require("lsp"),

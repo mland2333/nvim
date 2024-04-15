@@ -21,6 +21,8 @@ local ensure_list = {
   'tsx',
   'vue',
   'verilog',
+  'hlsl',
+  'glsl',
 }
 
 return {
