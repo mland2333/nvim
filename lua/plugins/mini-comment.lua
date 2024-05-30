@@ -2,11 +2,11 @@ return{
   {
     'echasnovski/mini.comment',
     lazy = true,
-    keys = { 'V', '<leader>c' },
+    keys = { 'V', '<leader>cc' },
     opts = {
       mappings = {
-        comment_line = '<leader>c',
-        comment_visual = '<leader>c',
+        comment_line = '<leader>cc',
+        comment_visual = '<leader>cc',
       }
     },
   }

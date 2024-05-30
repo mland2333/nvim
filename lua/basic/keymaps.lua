@@ -39,3 +39,7 @@ map("t", "<leader>k", [[ <C-\><C-N><C-w>k ]], opt)
 map("t", "<leader>l", [[ <C-\><C-N><C-w>l ]], opt)
 --nvim-tree
 map({"n", "v", "i"}, "<A-'>", ":NvimTreeFindFileToggle<CR>", opt)
+map({"n", "v", "i"}, "<A-;>", ":NvimTreeFindFile<CR>", opt)
+--bufferline
+map('n', '<leader>j', '<Cmd>BufferLineCyclePrev<CR>', opt)
+map('n', '<leader>k', '<Cmd>BufferLineCycleNext<CR>', opt)
