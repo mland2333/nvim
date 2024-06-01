@@ -43,3 +43,6 @@ map({"n", "v", "i"}, "<A-;>", ":NvimTreeFindFile<CR>", opt)
 --bufferline
 map('n', '<leader>j', '<Cmd>BufferLineCyclePrev<CR>', opt)
 map('n', '<leader>k', '<Cmd>BufferLineCycleNext<CR>', opt)
+
+--goto-preview
+map("n", "gp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", {noremap=true})

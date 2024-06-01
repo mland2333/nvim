@@ -18,6 +18,9 @@ require("lazy").setup({
     { import = "plugins"},
   },
 })
+--theme
+vim.o.background = "dark" -- or "light" for light mode
+vim.cmd([[colorscheme gruvbox]])
         --require("plugins")
         --require('plugins.nvim-tree'),
         --require("lsp"),
