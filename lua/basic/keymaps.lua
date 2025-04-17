@@ -30,6 +30,8 @@ map({"n", "v", "i"}, "<A-l>", "<C-w>l", opt)
 map("n", "q", ":q<CR>", opt)
 map("v", "p", '"_dP', opt)
 
+map({"n", "v"}, "p", "\"0p", opt)
+
 map("n", "<leader>m", ":sp | terminal<CR>", opt)
 map("n", "<leader>v", ":vsp | terminal<CR>", opt)
 map("t", "<Esc>", "<C-\\><C-n>", opt)
@@ -41,8 +43,13 @@ map("t", "<leader>l", [[ <C-\><C-N><C-w>l ]], opt)
 map({"n", "v", "i"}, "<A-'>", ":NvimTreeFindFileToggle<CR>", opt)
 map({"n", "v", "i"}, "<A-;>", ":NvimTreeFindFile<CR>", opt)
 --bufferline
-map('n', '<leader>j', '<Cmd>BufferLineCyclePrev<CR>', opt)
-map('n', '<leader>k', '<Cmd>BufferLineCycleNext<CR>', opt)
+-- map('n', '<leader>[', '<Cmd>BufferLineCyclePrev<CR>', opt)
+-- map('n', '<leader>]', '<Cmd>BufferLineCycleNext<CR>', opt)
 
 --goto-preview
 map("n", "gp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", {noremap=true})
+
+vim.keymap.set("n", "<leader>fo", function()
+    require("conform").format({ async = true, lsp_fallback = true })
+end, bufopts)
+

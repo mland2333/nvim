@@ -1,8 +1,6 @@
 return {
   {
     "neovim/nvim-lspconfig",
-
-
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
@@ -22,8 +20,8 @@ return {
         'texlab',
         'cmake',
         'sqlls',
-        'typst_lsp',
-        'bufls',
+        -- 'typst_lsp',
+        -- 'bufls',
         'rust_analyzer',
         'eslint',
         'asm_lsp',
