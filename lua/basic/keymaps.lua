@@ -35,20 +35,3 @@ map({ "n", "v" }, "p", "\"0p", opt)
 map("n", "<leader>m", ":sp | terminal<CR>", opt)
 map("n", "<leader>v", ":vsp | terminal<CR>", opt)
 map("t", "<Esc>", "<C-\\><C-n>", opt)
-map("t", "<leader>h", [[ <C-\><C-N><C-w>h ]], opt)
-map("t", "<leader>j", [[ <C-\><C-N><C-w>j ]], opt)
-map("t", "<leader>k", [[ <C-\><C-N><C-w>k ]], opt)
-map("t", "<leader>l", [[ <C-\><C-N><C-w>l ]], opt)
---nvim-tree
-map({ "n", "v", "i" }, "<A-'>", ":NvimTreeFindFileToggle<CR>", opt)
-map({ "n", "v", "i" }, "<A-;>", ":NvimTreeFindFile<CR>", opt)
---bufferline
--- map('n', '<leader>[', '<Cmd>BufferLineCyclePrev<CR>', opt)
--- map('n', '<leader>]', '<Cmd>BufferLineCycleNext<CR>', opt)
-
---goto-preview
-map("n", "gp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", { noremap = true })
-
-vim.keymap.set("n", "<leader>fo", function()
-  require("conform").format({ async = true, lsp_fallback = true })
-end, bufopts)
