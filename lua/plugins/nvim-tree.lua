@@ -3,7 +3,7 @@ return {
   dependencies = {
     "nvim-tree/nvim-web-devicons", -- 必须：添加图标支持
   },
-  -- 优化：懒加载，只有输入命令或按下快捷键时才加载插件
+  lazy = false,
   cmd = { "NvimTreeToggle", "NvimTreeFocus" },
   -- 快捷键配置：按 <Leader>e 切换文件树
   keys = {
