@@ -93,4 +93,3 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 })
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-

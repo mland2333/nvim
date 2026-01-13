@@ -2,120 +2,95 @@ return {
   {
     'akinsho/bufferline.nvim',
     version = "*",
-    --dependencies = {"nvim-tree/nvim-web-devicons"},
+    dependencies = {
+      "nvim-tree/nvim-web-devicons", -- 图标支持
+      "echasnovski/mini.bufremove",  -- 更好的关闭 buffer 插件 (不会弄乱布局)
+    },
     config = function()
-      -- calling `setup` is optional for customization
+      -- 确保开启真彩色
       vim.opt.termguicolors = true
+      
+      -- 引入 mini.bufremove
+      require('mini.bufremove').setup()
+
       require("bufferline").setup {
         options = {
-          buffer_close_icon = plain and 'x' or nil,
-          modified_icon = plain and '*' or nil,
-          -- close_icon = plain and 'x' or nil,
-          left_trunc_marker = plain and '<' or nil,
-          right_trunc_marker = plain and '>' or nil,
-          -- 使用 nvim 内置lsp
-          --diagnostics = "nvim_lsp",
-          numbers = function(opts)
-            return string.format(' %s/%s', vim.fn['tabpagenr'](), opts.ordinal)
+          -- 风格: 'slant' | 'slope' | 'thick' | 'thin'
+          style_preset = require("bufferline").style_preset.default,
+          separator_style = "slant", 
+          
+          -- 图标设置
+          modified_icon = '●',
+          close_icon = '',
+          left_trunc_marker = '',
+          right_trunc_marker = '',
+          
+          -- 显示 LSP 诊断
+          diagnostics = "nvim_lsp",
+          diagnostics_indicator = function(count, level, diagnostics_dict, context)
+            local icon = level:match("error") and " " or " "
+            return " " .. icon .. count
           end,
-          -- 左侧让出 nvim-tree 的位置
-          offsets = { {
-            filetype = "NvimTree",
-            text = "File Explorer",
-            highlight = "Directory",
-            text_align = "left"
+
+          -- 左侧避让设置 (文件树)
+          offsets = {
+            {
+              filetype = "NvimTree",
+              text = "File Explorer",
+              highlight = "Directory",
+              separator = true,
+              text_align = "left"
+            },
+            {
+              filetype = "aerial", -- 适配你之前问的 aerial
+              text = "Outline",
+              highlight = "Directory",
+              text_align = "right"
+            }
           },
-          {
-            filetype = 'vista',
-            text = function()
-              return vim.fn.getcwd()
-            end,
-            highlight = "Tags",
-            text_align = "right"
-          }
 
-        },
-        close_command = function(bufnum)
-          require('bufdelete').bufdelete(bufnum, true)
-        end,
-        diagnostics = "nvim_lsp",
-        diagnostics_indicator = function(count, level, diagnostics_dict, context)
-          return "("..count..")"
-        end,
-        sort_by = 'insert_after_current',
-        custom_filter = function(buf_number, buf_numbers)
-          -- filter out filetypes you don't want to see
-          if vim.bo[buf_number].filetype == "qf" then
-            return false
-          end
-          if vim.bo[buf_number].buftype == "terminal" then
-            return false
-          end
-          if vim.bo[buf_number].buftype == "nofile" then
-            return false
-          end
-          if vim.bo[buf_number].filetype == "Trouble" then
-            return false
-          end
-          -- if string.find(vim.fn.bufname(buf_number), 'term://') == 1 then
-          --     return false
-          -- end
-          return true
-        end,
+          -- 鼠标点击关闭时的行为
+          close_command = function(bufnum)
+            require('mini.bufremove').delete(bufnum, false)
+          end,
+
+          -- 排序和过滤
+          sort_by = 'insert_after_current',
+          hover = {
+            enabled = true,
+            delay = 200,
+            reveal = {'close'}
+          },
+        }
       }
-    }
-    local function close_empty_unnamed_buffers()
-      -- Get a list of all buffers
-      local buffers = vim.api.nvim_list_bufs()
 
-      -- Iterate over each buffer
-      for _, bufnr in ipairs(buffers) do
-        -- Check if the buffer is empty and doesn't have a name
-        if vim.api.nvim_buf_is_loaded(bufnr) and vim.api.nvim_buf_get_name(bufnr) == '' and
-          -- vim.api.nvim_buf_get_option(bufnr, 'buftype') == ''
-          vim.bo[bufnr].buftype == '' then
+      -- === 快捷键设置 (推荐方案) ===
+      local map = vim.keymap.set
+      local opts = { noremap = true, silent = true, desc = "Buffer" }
 
-          -- Close the buffer if it's empty:
-          if vim.api.nvim_buf_line_count(bufnr) == 1 then
-            local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
-            if #lines == 0 or lines[0] == nil or #lines[0] == 0 then
-              vim.api.nvim_buf_delete(bufnr, {
-                force = true,
-              })
-            end
-          end
-        end
-      end
+      -- 1. 左右切换 (最常用) -> Shift + H / L
+      map('n', '<S-h>', '<cmd>BufferLineCyclePrev<CR>', { desc = "Prev Buffer" })
+      map('n', '<S-l>', '<cmd>BufferLineCycleNext<CR>', { desc = "Next Buffer" })
+
+      -- 2. 移动 Buffer 位置 -> Leader + b + 箭头
+      map('n', '<leader>b<Left>', '<cmd>BufferLineMovePrev<CR>', { desc = "Move buffer left" })
+      map('n', '<leader>b<Right>', '<cmd>BufferLineMoveNext<CR>', { desc = "Move buffer right" })
+
+      -- 3. 关闭 Buffer
+      -- 使用 mini.bufremove 删除当前 buffer，不破坏窗口布局
+      map('n', '<leader>bd', function() require("mini.bufremove").delete(0, false) end, { desc = "Delete Buffer" })
+      map('n', '<leader>bD', function() require("mini.bufremove").delete(0, true) end, { desc = "Force Delete Buffer" })
+
+      -- 4. 关闭其他/左侧/右侧
+      map('n', '<leader>bo', '<cmd>BufferLineCloseOthers<CR>', { desc = "Close other buffers" })
+      map('n', '<leader>bl', '<cmd>BufferLineCloseLeft<CR>', { desc = "Close buffers to left" })
+      map('n', '<leader>br', '<cmd>BufferLineCloseRight<CR>', { desc = "Close buffers to right" })
+      
+      -- 5. 快速跳转 (比如 Picker)
+      map('n', '<leader>bp', '<cmd>BufferLinePick<CR>', { desc = "Pick Buffer" })
+
+      -- 6. 固定 Buffer (防止被误关)
+      map('n', '<leader>bt', '<cmd>BufferLineTogglePin<CR>', { desc = "Toggle Pin" })
     end
-    vim.api.nvim_create_autocmd({"BufReadPost"}, {
-      callback = function (data)
-        close_empty_unnamed_buffers()
-      end,
-    })
-
-
-    vim.keymap.set({"v", "n"}, "g<Tab>", "<cmd>BufferLineTogglePin<CR>", { silent = true })
-    vim.keymap.set({"v", "n"}, "gb", "<cmd>BufferLineCyclePrev<CR>", { silent = true })
-    vim.keymap.set({"v", "n"}, "gt", "<cmd>BufferLineCycleNext<CR>", { silent = true })
-    vim.keymap.set({"v", "n"}, "g<Space>", "<cmd>BufferLinePick<CR>", { silent = true })
-    vim.keymap.set({"v", "n"}, "g<BS>", "<cmd>bdelete<CR>", { silent = true })
-    -- vim.keymap.set({"v", "n"}, "go", "<cmd>blast<CR>", { silent = true })
-    -- vim.keymap.set({"v", "n"}, "gO", "<cmd>bfirst<CR>", { silent = true })
-    vim.keymap.set({"v", "n"}, "gB", "<cmd>BufferLineMovePrev<CR>", { silent = true })
-    vim.keymap.set({"v", "n"}, "gT", "<cmd>BufferLineMoveNext<CR>", { silent = true })
-    vim.keymap.set({"v", "n"}, "g<S-Tab>", "<cmd>BufferLineCloseOthers<CR>", { silent = true })
-    vim.keymap.set({"v", "n"}, "g<C-b>", "<cmd>BufferLineCloseLeft<CR>", { silent = true })
-    vim.keymap.set({"v", "n"}, "g<C-t>", "<cmd>BufferLineCloseRight<CR>", { silent = true })
-
-    vim.keymap.set({"v", "n", "i"}, "<F1>", "<cmd>BufferLineTogglePin<CR>", { silent = true })
-    vim.keymap.set({"v", "n", "i"}, "<F2>", "<cmd>BufferLineCyclePrev<CR>", { silent = true })
-    vim.keymap.set({"v", "n", "i"}, "<F3>", "<cmd>BufferLineCycleNext<CR>", { silent = true })
-    vim.keymap.set({"v", "n", "i"}, "<F13>", "<cmd>bdelete<CR>", { silent = true })
-    vim.keymap.set({"v", "n", "i"}, "<F14>", "<cmd>BufferLineMovePrev<CR>", { silent = true })
-    vim.keymap.set({"v", "n", "i"}, "<F15>", "<cmd>BufferLineMoveNext<CR>", { silent = true })
-    vim.keymap.set({"v", "n", "i"}, "<C-F13>", "<cmd>BufferLineCloseOthers<CR>", { silent = true })
-    vim.keymap.set({"v", "n", "i"}, "<C-F14>", "<cmd>BufferLineCloseLeft<CR>", { silent = true })
-    vim.keymap.set({"v", "n", "i"}, "<C-F15>", "<cmd>BufferLineCloseRight<CR>", { silent = true })
-  end
-}
+  }
 }

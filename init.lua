@@ -18,6 +18,7 @@ require("lazy").setup({
     { import = "plugins"},
   },
 })
+vim.api.nvim_set_option("clipboard", "unnamedplus")
 --theme
 vim.o.background = "dark" -- or "light" for light mode
 vim.opt.termguicolors = true
