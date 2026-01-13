@@ -27,7 +27,7 @@ map({ "n", "v", "i" }, "<A-h>", "<C-w>h", opt)
 map({ "n", "v", "i" }, "<A-j>", "<C-w>j", opt)
 map({ "n", "v", "i" }, "<A-k>", "<C-w>k", opt)
 map({ "n", "v", "i" }, "<A-l>", "<C-w>l", opt)
-map("n", "q", ":q<CR>", opt)
+map("n", "<leader>q", ":q<CR>", opt)
 map("v", "p", '"_dP', opt)
 
 map({ "n", "v" }, "p", "\"0p", opt)
