@@ -15,7 +15,7 @@ return {
       'hrsh7th/cmp-nvim-lua',
       'hrsh7th/cmp-buffer',
       'hrsh7th/cmp-path',
-      'hrsh7th/cmp-calc', -- 修复：之前漏了这个依赖
+      'hrsh7th/cmp-calc',
       'onsails/lspkind-nvim',
       'lukas-reineke/cmp-under-comparator',
     },
@@ -47,7 +47,7 @@ return {
           { name = "nvim_lsp", max_item_count = 10 },
           { name = "luasnip" },
           { name = "path" },
-          { name = "calc",     max_item_count = 3 }, -- 现在有依赖了，这个能用了
+          { name = "calc",     max_item_count = 3 },
         }, {
           -- 放在第二个 group 里，优先级低于上面的
           { name = "buffer", max_item_count = 8, keyword_length = 2 },
@@ -98,67 +98,47 @@ return {
           }),
         }),
         window = {
-          completion = cmp.config.window.bordered({
-            winhighlight = 'Normal:Pmenu,FloatBorder:Pmenu,Search:None',
-            col_offset = -3,
-            side_padding = 0,
-          }),
-          documentation = cmp.config.window.bordered({
-            winhighlight = 'Normal:Pmenu,FloatBorder:Pmenu,Search:None',
-          }),
+          completion = {
+            border = "rounded",
+            winhighlight = "Normal:CmpPmenu,FloatBorder:CmpBorder,CursorLine:CmpSel,Search:None",
+            col_offset = -2,
+            side_padding = 1,
+          },
+          documentation = {
+            border = "rounded",
+            winhighlight = "Normal:CmpDoc,FloatBorder:CmpDocBorder,Search:None",
+          },
         },
+
         formatting = {
-          format = lspkind.cmp_format({
-            mode = 'symbol', -- text_symbol / text / symbol
-            maxwidth = 50,
-            ellipsis_char = '...',
-            before = function(entry, vim_item)
-              vim_item.menu = "[" .. string.upper(entry.source.name) .. "]"
-              if entry.source.name == "calc" then
-                vim_item.kind = "Calc"
-              end
-              return vim_item
-            end,
-            -- 这里保留了你的自定义图标映射
-            symbol_map = {
-              Text = "󰉿",
-              Method = "󰆧",
-              Function = "󰊕",
-              Constructor = "",
-              Field = "󰜢",
-              Variable = "󰀫",
-              Class = "󰠱",
-              Interface = "",
-              Module = "",
-              Property = "󰜢",
-              Unit = "󰑭",
-              Value = "󰎠",
-              Enum = "",
-              Keyword = "󰌋",
-              Snippet = "",
-              Color = "󰏘",
-              File = "󰈙",
-              Reference = "󰈇",
-              Folder = "󰉋",
-              EnumMember = "",
-              Constant = "󰏿",
-              Struct = "󰙅",
-              Event = "",
-              Operator = "󰆕",
-              TypeParameter = "",
-              Calc = "",
-              Git = "",
-              Search = "",
-              Rime = "",
-              Clipboard = "",
-              Call = "",
-            },
-          })
+          fields = { "kind", "abbr", "menu" },
+          format = function(entry, vim_item)
+            local kind = require("lspkind").symbolic(vim_item.kind, {
+              mode = "symbol",
+            })
+
+            vim_item.kind = " " .. kind .. " "
+            vim_item.menu = ({
+              nvim_lsp = "󰘦 LSP",
+              luasnip  = "󰃐 Snip",
+              buffer   = "󰦨 Buf",
+              path     = "󰉋 Path",
+              calc     = " Calc",
+            })[entry.source.name]
+
+            return vim_item
+          end,
         },
+
         experimental = {
           ghost_text = true,
         }
       })
+      vim.api.nvim_set_hl(0, "CmpPmenu", { bg = "#1e1e2e" })
+      vim.api.nvim_set_hl(0, "CmpBorder", { fg = "#89b4fa", bg = "#1e1e2e" })
+      vim.api.nvim_set_hl(0, "CmpSel", { bg = "#313244", bold = true })
+      vim.api.nvim_set_hl(0, "CmpDoc", { bg = "#181825" })
+      vim.api.nvim_set_hl(0, "CmpDocBorder", { fg = "#94e2d5", bg = "#181825" })
     end
   }
 }
