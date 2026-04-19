@@ -39,6 +39,7 @@ return {
     opts = {
       -- 1. 定义不同语言的格式化工具
       formatters_by_ft = {
+        scala = { "scalafmt" },
         lua = { "stylua" },
         -- Python: 先跑 isort 整理引用，再跑 black 格式化
         python = { "isort", "black" },
